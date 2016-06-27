@@ -3777,12 +3777,6 @@ public class PackageManagerService extends IPackageManager.Stub {
 
             PermissionsState permissionsState = sb.getPermissionsState();
 
-            // Only the package manager can change flags for system component permissions.
-            final int flags = permissionsState.getPermissionFlags(bp.name, userId);
-            if ((flags & PackageManager.FLAG_PERMISSION_SYSTEM_FIXED) != 0) {
-                return;
-            }
-
             boolean hadState = permissionsState.getRuntimePermissionState(name, userId) != null;
 
             if (permissionsState.updatePermissionFlags(bp, userId, flagMask, flagValues)) {
@@ -7167,7 +7161,6 @@ public class PackageManagerService extends IPackageManager.Stub {
                             if (sysPs.pkg != null && sysPs.pkg.libraryNames != null) {
                                 for (int j=0; j<sysPs.pkg.libraryNames.size(); j++) {
                                     if (name.equals(sysPs.pkg.libraryNames.get(j))) {
-                                        allowed = true;
                                         allowed = true;
                                         break;
                                     }
@@ -14476,6 +14469,7 @@ public class PackageManagerService extends IPackageManager.Stub {
     public ComponentName getHomeActivities(List<ResolveInfo> allHomeCandidates) {
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_HOME);
+        intent.addCategory(Intent.CATEGORY_DEFAULT);
 
         final int callingUserId = UserHandle.getCallingUserId();
         List<ResolveInfo> list = queryIntentActivities(intent, null,
